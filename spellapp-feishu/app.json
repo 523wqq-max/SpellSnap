@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/word-list/word-list",
+    "pages/spell/spell",
+    "pages/stats/stats"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "拼写助手",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "录入",
+        "iconPath": "static/camera.png",
+        "selectedIconPath": "static/camera-active.png"
+      },
+      {
+        "pagePath": "pages/spell/spell",
+        "text": "练习",
+        "iconPath": "static/spell.png",
+        "selectedIconPath": "static/spell-active.png"
+      },
+      {
+        "pagePath": "pages/word-list/word-list",
+        "text": "词库",
+        "iconPath": "static/list.png",
+        "selectedIconPath": "static/list-active.png"
+      },
+      {
+        "pagePath": "pages/stats/stats",
+        "text": "分析",
+        "iconPath": "static/stats.png",
+        "selectedIconPath": "static/stats-active.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.camera": {
+      "desc": "用于拍照识别单词"
+    }
+  }
+}
