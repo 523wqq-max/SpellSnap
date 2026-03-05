@@ -18,11 +18,17 @@
       <text>{{isIelts ? '✓ 雅思词汇' : '标记为雅思词汇'}}</text>
     </view>
     
-    <!-- 释义分行展示 -->
+    <!-- 释义分行展示（带例句） -->
     <view class="meaning-display" wx:if="{{meaningArray.length > 0}}">
       <view class="meaning-item" wx:for="{{meaningArray}}" wx:key="index">
-        <text class="meaning-pos" wx:if="{{item.pos}}">{{item.pos}}</text>
-        <text class="meaning-def">{{item.def}}</text>
+        <view class="meaning-header">
+          <text class="meaning-pos" wx:if="{{item.pos}}">{{item.pos}}</text>
+          <text class="meaning-def">{{item.def}}</text>
+        </view>
+        <view class="meaning-example" wx:if="{{item.exampleEng}}">
+          <text class="example-eng">{{item.exampleEng}}</text>
+          <text class="example-chn">{{item.exampleChn}}</text>
+        </view>
       </view>
     </view>
     

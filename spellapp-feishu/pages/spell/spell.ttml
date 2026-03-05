@@ -12,22 +12,26 @@
 
   <view class="practice-section" wx:if="{{currentWord}}">
     <view class="prompt-card">
-      <!-- 优先展示例句 -->
-      <view wx:if="{{currentWord.example}}">
+      <!-- 优先展示当前释义的例句 -->
+      <view wx:if="{{currentWord.displayMeaning && currentWord.displayMeaning.exampleEng}}">
+        <text class="example-eng">{{currentWord.displayMeaning.exampleEng}}</text>
+        <text class="example-chn">{{currentWord.displayMeaning.exampleChn}}</text>
+      </view>
+      
+      <!-- 无例句时展示释义 -->
+      <view wx:elif="{{currentWord.displayMeaning}}">
+        <view class="meaning-row">
+          <text class="meaning-pos" wx:if="{{currentWord.displayMeaning.pos}}">{{currentWord.displayMeaning.pos}}</text>
+          <text class="meaning-def">{{currentWord.displayMeaning.def}}</text>
+        </view>
+      </view>
+      
+      <!-- 兼容旧数据 -->
+      <view wx:elif="{{currentWord.example}}">
         <text class="example-eng">{{currentWord.example.split('\n')[0]}}</text>
         <text class="example-chn">{{currentWord.example.split('\n')[1]}}</text>
       </view>
-      <!-- 无例句时展示释义（分行） -->
-      <view wx:else>
-        <view class="meaning-row" wx:for="{{currentWord.meaningArray}}" wx:key="index">
-          <text class="meaning-pos" wx:if="{{item.pos}}">{{item.pos}}</text>
-          <text class="meaning-def">{{item.def}}</text>
-        </view>
-        <!-- 兼容旧数据 -->
-        <text class="meaning" wx:if="{{!currentWord.meaningArray || currentWord.meaningArray.length === 0}}">
-          {{currentWord.meaning || '请拼写这个单词'}}
-        </text>
-      </view>
+      <text class="meaning" wx:else>{{currentWord.meaning || '请拼写这个单词'}}</text>
       
       <view class="word-tags">
         <view class="tag ielts" wx:if="{{currentWord.isIelts}}">雅思</view>

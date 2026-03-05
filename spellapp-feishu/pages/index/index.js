@@ -1,37 +1,37 @@
 const app = getApp();
 
-// 解析释义，按词性分组
-function parseMeaning(trsData) {
-  if (!trsData || !Array.isArray(trsData)) return [];
+// 解析释义和例句，按词性分组
+function parseCollins(collinsData) {
+  if (!collinsData || !collinsData.collins_entries) return [];
   
+  const entries = collinsData.collins_entries[0]?.entries || [];
   const meanings = [];
   
-  trsData.forEach(tr => {
-    // 获取释义文本
-    let def = '';
-    if (tr.tr && tr.tr[0] && tr.tr[0].l && tr.tr[0].l.i) {
-      def = tr.tr[0].l.i[0] || '';
-    }
-    
+  entries.forEach(entry => {
     // 获取词性
-    let pos = '';
-    if (tr.pos) {
-      pos = tr.pos;
-    } else if (tr.fy) {
-      pos = tr.fy;
+    const pos = entry.headword?.split(' ')[1] || '';
+    
+    // 获取释义
+    let def = '';
+    if (entry.tran) {
+      def = entry.tran;
     }
     
-    // 如果 def 包含词性标记（如 "adj. 必要的"），提取出来
+    // 获取例句
+    let exampleEng = '';
+    let exampleChn = '';
+    if (entry.sentences && entry.sentences.length > 0) {
+      exampleEng = entry.sentences[0].eng || '';
+      exampleChn = entry.sentences[0].chn || '';
+    }
+    
     if (def) {
-      const match = def.match(/^(\w+\.)(.+)$/);
-      if (match && !pos) {
-        pos = match[1].trim();
-        def = match[2].trim();
-      }
-      
-      if (def) {
-        meanings.push({ pos, def });
-      }
+      meanings.push({
+        pos,
+        def,
+        exampleEng,
+        exampleChn
+      });
     }
   });
   
@@ -55,12 +55,6 @@ function queryYoudao(word) {
             if (entry.ukphone) result.phonetic = `/${entry.ukphone}/`;
             else if (entry.usphone) result.phonetic = `/${entry.usphone}/`;
             
-            // 释义
-            if (entry.trs) {
-              result.meaningArray = parseMeaning(entry.trs);
-              result.meaning = result.meaningArray.map(m => (m.pos ? m.pos + ' ' : '') + m.def).join('; ');
-            }
-            
             // 雅思标签
             if (entry.wfs) {
               const ieltsTag = entry.wfs.find(w => w.wf && w.wf.name === '标签' && w.wf.value && w.wf.value.includes('雅思'));
@@ -69,18 +63,32 @@ function queryYoudao(word) {
           }
         }
         
-        // 尝试获取例句
+        // 从 collins 获取释义和例句
         if (res.data && res.data.collins) {
-          const collinsData = res.data.collins.collins_entries;
-          if (collinsData && collinsData.length > 0) {
-            const entries = collinsData[0].entries;
-            if (entries && entries.length > 0) {
-              const firstEntry = entries[0];
-              if (firstEntry.sentences && firstEntry.sentences.length > 0) {
-                const sentence = firstEntry.sentences[0];
-                result.example = `${sentence.eng}\n${sentence.chn}`;
+          result.meaningArray = parseCollins(res.data.collins);
+          result.meaning = result.meaningArray.map(m => (m.pos ? m.pos + ' ' : '') + m.def).join('; ');
+          
+          // 第一条例句作为默认展示
+          if (result.meaningArray.length > 0 && result.meaningArray[0].exampleEng) {
+            result.example = `${result.meaningArray[0].exampleEng}\n${result.meaningArray[0].exampleChn}`;
+          }
+        }
+        
+        // 如果 collins 没有，尝试从 ec 获取基本释义
+        if (result.meaningArray.length === 0 && res.data && res.data.ec && res.data.ec.word) {
+          const entry = res.data.ec.word[0];
+          if (entry.trs) {
+            entry.trs.forEach(tr => {
+              let def = '';
+              if (tr.tr && tr.tr[0] && tr.tr[0].l && tr.tr[0].l.i) {
+                def = tr.tr[0].l.i[0] || '';
               }
-            }
+              let pos = tr.pos || '';
+              if (def) {
+                result.meaningArray.push({ pos, def, exampleEng: '', exampleChn: '' });
+              }
+            });
+            result.meaning = result.meaningArray.map(m => (m.pos ? m.pos + ' ' : '') + m.def).join('; ');
           }
         }
         

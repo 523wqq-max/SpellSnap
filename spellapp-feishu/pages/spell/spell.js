@@ -72,8 +72,21 @@ Page({
       this.setData({ currentWord: null, dueCount: 0 });
       return;
     }
+    
+    const currentWord = queue[currentIndex];
+    
+    // 选择要展示的释义（优先有例句的）
+    let displayMeaning = null;
+    if (currentWord.meaningArray && currentWord.meaningArray.length > 0) {
+      // 优先找有例句的
+      displayMeaning = currentWord.meaningArray.find(m => m.exampleEng) || currentWord.meaningArray[0];
+    }
+    
     this.setData({
-      currentWord: queue[currentIndex],
+      currentWord: {
+        ...currentWord,
+        displayMeaning
+      },
       userInput: '',
       showFeedback: false,
       isCorrect: false,

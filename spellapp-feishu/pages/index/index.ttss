@@ -72,13 +72,16 @@
   margin-bottom: 20rpx;
 }
 .meaning-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 12rpx 0;
+  padding: 16rpx 0;
   border-bottom: 1rpx solid #e8e8e8;
 }
 .meaning-item:last-child {
   border-bottom: none;
+}
+.meaning-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
 }
 .meaning-pos {
   background: #1890ff;
@@ -95,6 +98,24 @@
   font-size: 30rpx;
   color: #333;
   line-height: 1.5;
+}
+.meaning-example {
+  background: #f0f0f0;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  margin-left: 76rpx;
+}
+.example-eng {
+  font-size: 26rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+}
+.example-chn {
+  font-size: 24rpx;
+  color: #999;
+  display: block;
 }
 .add-btn {
   background: #07c160;
