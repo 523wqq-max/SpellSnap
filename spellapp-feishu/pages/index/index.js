@@ -1,25 +1,36 @@
 const app = getApp();
 
 // 解析释义，按词性分组
-function parseMeaning(meaningStr) {
-  if (!meaningStr) return [];
+function parseMeaning(trsData) {
+  if (!trsData || !Array.isArray(trsData)) return [];
   
   const meanings = [];
-  const parts = meaningStr.split('; ');
   
-  parts.forEach(part => {
-    const match = part.match(/^(\w+\.)(.+)$/);
-    if (match) {
-      meanings.push({
-        pos: match[1].trim(),  // 词性如 n. adj.
-        def: match[2].trim()   // 释义
-      });
-    } else {
-      // 没有词性标记的，合并到上一项或单独显示
-      if (meanings.length > 0) {
-        meanings[meanings.length - 1].def += '; ' + part;
-      } else {
-        meanings.push({ pos: '', def: part });
+  trsData.forEach(tr => {
+    // 获取释义文本
+    let def = '';
+    if (tr.tr && tr.tr[0] && tr.tr[0].l && tr.tr[0].l.i) {
+      def = tr.tr[0].l.i[0] || '';
+    }
+    
+    // 获取词性
+    let pos = '';
+    if (tr.pos) {
+      pos = tr.pos;
+    } else if (tr.fy) {
+      pos = tr.fy;
+    }
+    
+    // 如果 def 包含词性标记（如 "adj. 必要的"），提取出来
+    if (def) {
+      const match = def.match(/^(\w+\.)(.+)$/);
+      if (match && !pos) {
+        pos = match[1].trim();
+        def = match[2].trim();
+      }
+      
+      if (def) {
+        meanings.push({ pos, def });
       }
     }
   });
@@ -46,8 +57,8 @@ function queryYoudao(word) {
             
             // 释义
             if (entry.trs) {
-              result.meaning = entry.trs.map(t => t.tr[0].l.i[0]).join('; ');
-              result.meaningArray = parseMeaning(result.meaning);
+              result.meaningArray = parseMeaning(entry.trs);
+              result.meaning = result.meaningArray.map(m => (m.pos ? m.pos + ' ' : '') + m.def).join('; ');
             }
             
             // 雅思标签
