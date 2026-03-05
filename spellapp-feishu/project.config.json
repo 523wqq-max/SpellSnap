@@ -1,0 +1,34 @@
+{
+  "appid": "cli_a922d40bd4385cb3",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": false,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "uglifyFileName": false,
+    "packNpmRelationList": [],
+    "lazyloadPlaceholderEnable": false,
+    "useCompilerPlugins": false
+  },
+  "compileType": "miniprogram",
+  "libVersion": "1.0.0",
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "debugOptions": {
+    "hidedInDevtools": []
+  },
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  },
+  "condition": {}
+}
