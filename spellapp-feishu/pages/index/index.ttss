@@ -15,7 +15,7 @@
   margin-bottom: 20rpx;
   display: block;
 }
-.word-input, .meaning-input, .example-input {
+.word-input, .example-input {
   border: 2rpx solid #e0e0e0;
   border-radius: 12rpx;
   padding: 24rpx;
@@ -45,8 +45,9 @@
   padding: 16rpx 24rpx;
   border-radius: 8rpx;
   margin-bottom: 20rpx;
-  font-size: 28rpx;
-  color: #666;
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
 }
 .ielts-tag {
   display: inline-block;
@@ -62,6 +63,38 @@
   background: #e6f7ff;
   color: #1890ff;
   border-color: #1890ff;
+}
+/* 释义分行展示 */
+.meaning-display {
+  background: #fafafa;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+.meaning-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #e8e8e8;
+}
+.meaning-item:last-child {
+  border-bottom: none;
+}
+.meaning-pos {
+  background: #1890ff;
+  color: #fff;
+  font-size: 24rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  margin-right: 16rpx;
+  min-width: 60rpx;
+  text-align: center;
+}
+.meaning-def {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+  line-height: 1.5;
 }
 .add-btn {
   background: #07c160;

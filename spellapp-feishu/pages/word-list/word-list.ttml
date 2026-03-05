@@ -7,9 +7,20 @@
   <view class="word-list" wx:if="{{filteredWords.length > 0}}">
     <view class="word-card" wx:for="{{filteredWords}}" wx:key="id">
       <view class="word-info">
-        <text class="word-text">{{item.word}}</text>
-        <text class="word-meaning">{{item.meaning || '暂无释义'}}</text>
+        <view class="word-header">
+          <text class="word-text">{{item.word}}</text>
+          <view class="tag ielts" wx:if="{{item.isIelts}}">雅思</view>
+        </view>
+        
+        <view class="meaning-list" wx:if="{{item.meaningArray && item.meaningArray.length > 0}}">
+          <view class="meaning-row" wx:for="{{item.meaningArray}}" wx:for-item="m" wx:key="index">
+            <text class="meaning-pos" wx:if="{{m.pos}}">{{m.pos}}</text>
+            <text class="meaning-def">{{m.def}}</text>
+          </view>
+        </view>
+        <text class="word-meaning" wx:else>{{item.meaning || '暂无释义'}}</text>
       </view>
+      
       <view class="word-meta">
         <view class="review-badge {{item.reviewStatus}}">{{item.reviewText}}</view>
         <text class="delete-btn" bindtap="deleteWord" data-id="{{item.id}}">删除</text>

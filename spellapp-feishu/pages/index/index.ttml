@@ -11,14 +11,20 @@
     </view>
     
     <view class="phonetic-display" wx:if="{{phonetic}}">
-      <text>音标：{{phonetic}}</text>
+      <text>{{phonetic}}</text>
     </view>
     
     <view class="ielts-tag {{isIelts ? 'active' : ''}}" bindtap="toggleIelts">
       <text>{{isIelts ? '✓ 雅思词汇' : '标记为雅思词汇'}}</text>
     </view>
     
-    <input class="meaning-input" placeholder="中文释义（可自动填充）" value="{{inputMeaning}}" bindinput="onMeaningInput" />
+    <!-- 释义分行展示 -->
+    <view class="meaning-display" wx:if="{{meaningArray.length > 0}}">
+      <view class="meaning-item" wx:for="{{meaningArray}}" wx:key="index">
+        <text class="meaning-pos" wx:if="{{item.pos}}">{{item.pos}}</text>
+        <text class="meaning-def">{{item.def}}</text>
+      </view>
+    </view>
     
     <textarea class="example-input" placeholder="例句（可选，可自动填充）" value="{{inputExample}}" bindinput="onExampleInput" />
     

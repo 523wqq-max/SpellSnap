@@ -17,9 +17,16 @@
         <text class="example-eng">{{currentWord.example.split('\n')[0]}}</text>
         <text class="example-chn">{{currentWord.example.split('\n')[1]}}</text>
       </view>
-      <!-- 无例句时展示释义 -->
+      <!-- 无例句时展示释义（分行） -->
       <view wx:else>
-        <text class="meaning">{{currentWord.meaning || '请拼写这个单词'}}</text>
+        <view class="meaning-row" wx:for="{{currentWord.meaningArray}}" wx:key="index">
+          <text class="meaning-pos" wx:if="{{item.pos}}">{{item.pos}}</text>
+          <text class="meaning-def">{{item.def}}</text>
+        </view>
+        <!-- 兼容旧数据 -->
+        <text class="meaning" wx:if="{{!currentWord.meaningArray || currentWord.meaningArray.length === 0}}">
+          {{currentWord.meaning || '请拼写这个单词'}}
+        </text>
       </view>
       
       <view class="word-tags">

@@ -58,6 +58,29 @@
   display: block;
   margin-bottom: 20rpx;
 }
+/* 释义分行展示 */
+.meaning-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8rpx 0;
+}
+.meaning-pos {
+  background: #1890ff;
+  color: #fff;
+  font-size: 24rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  margin-right: 16rpx;
+  min-width: 60rpx;
+}
+.meaning-def {
+  font-size: 32rpx;
+  color: #333;
+  line-height: 1.5;
+  text-align: left;
+}
+/* 兼容旧数据 */
 .meaning {
   font-size: 40rpx;
   color: #333;

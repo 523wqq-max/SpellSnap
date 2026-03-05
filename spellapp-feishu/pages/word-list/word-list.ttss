@@ -23,17 +23,61 @@
   margin-bottom: 20rpx;
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+}
+.word-header {
+  display: flex;
   align-items: center;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
 }
 .word-text {
   font-size: 36rpx;
   font-weight: bold;
   color: #333;
 }
+.tag.ielts {
+  background: #e6f7ff;
+  color: #1890ff;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+}
+.meaning-list {
+  margin-top: 8rpx;
+}
+.meaning-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 4rpx 0;
+}
+.meaning-pos {
+  background: #1890ff;
+  color: #fff;
+  font-size: 22rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 6rpx;
+  margin-right: 12rpx;
+  min-width: 50rpx;
+  text-align: center;
+}
+.meaning-def {
+  flex: 1;
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.4;
+}
 .word-meaning {
   font-size: 28rpx;
   color: #666;
   margin-top: 8rpx;
+}
+.word-meta {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12rpx;
 }
 .review-badge {
   background: #e8f5e9;
@@ -53,7 +97,6 @@
 .delete-btn {
   color: #ff4d4f;
   font-size: 28rpx;
-  margin-left: 20rpx;
 }
 .empty-state {
   text-align: center;

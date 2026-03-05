@@ -1,5 +1,32 @@
 const app = getApp();
 
+// 解析释义，按词性分组
+function parseMeaning(meaningStr) {
+  if (!meaningStr) return [];
+  
+  const meanings = [];
+  const parts = meaningStr.split('; ');
+  
+  parts.forEach(part => {
+    const match = part.match(/^(\w+\.)(.+)$/);
+    if (match) {
+      meanings.push({
+        pos: match[1].trim(),  // 词性如 n. adj.
+        def: match[2].trim()   // 释义
+      });
+    } else {
+      // 没有词性标记的，合并到上一项或单独显示
+      if (meanings.length > 0) {
+        meanings[meanings.length - 1].def += '; ' + part;
+      } else {
+        meanings.push({ pos: '', def: part });
+      }
+    }
+  });
+  
+  return meanings;
+}
+
 // 有道词典查询
 function queryYoudao(word) {
   return new Promise((resolve) => {
@@ -7,7 +34,7 @@ function queryYoudao(word) {
       url: `https://dict.youdao.com/jsonapi?q=${encodeURIComponent(word)}`,
       method: 'GET',
       success: (res) => {
-        const result = { phonetic: '', meaning: '', example: '', isIelts: false };
+        const result = { phonetic: '', meaning: '', meaningArray: [], example: '', isIelts: false };
         
         if (res.data && res.data.ec) {
           const wordData = res.data.ec.word;
@@ -20,9 +47,10 @@ function queryYoudao(word) {
             // 释义
             if (entry.trs) {
               result.meaning = entry.trs.map(t => t.tr[0].l.i[0]).join('; ');
+              result.meaningArray = parseMeaning(result.meaning);
             }
             
-            // 例句
+            // 雅思标签
             if (entry.wfs) {
               const ieltsTag = entry.wfs.find(w => w.wf && w.wf.name === '标签' && w.wf.value && w.wf.value.includes('雅思'));
               result.isIelts = !!ieltsTag;
@@ -30,7 +58,7 @@ function queryYoudao(word) {
           }
         }
         
-        // 尝试获取例句（从 Collins 或其他源）
+        // 尝试获取例句
         if (res.data && res.data.collins) {
           const collinsData = res.data.collins.collins_entries;
           if (collinsData && collinsData.length > 0) {
@@ -47,7 +75,7 @@ function queryYoudao(word) {
         
         resolve(result);
       },
-      fail: () => resolve({ phonetic: '', meaning: '', example: '', isIelts: false })
+      fail: () => resolve({ phonetic: '', meaning: '', meaningArray: [], example: '', isIelts: false })
     });
   });
 }
@@ -56,6 +84,7 @@ Page({
   data: {
     inputWord: '',
     inputMeaning: '',
+    meaningArray: [],
     inputExample: '',
     phonetic: '',
     isIelts: false,
@@ -111,6 +140,7 @@ Page({
 
     this.setData({
       inputMeaning: result.meaning,
+      meaningArray: result.meaningArray,
       inputExample: result.example,
       phonetic: result.phonetic,
       isIelts: result.isIelts
@@ -140,6 +170,7 @@ Page({
       id: app.utils.generateId(),
       word: inputWord.trim(),
       meaning: inputMeaning.trim(),
+      meaningArray: this.data.meaningArray || [],
       example: inputExample.trim(),
       phonetic: phonetic || '',
       isIelts: isIelts,
@@ -164,7 +195,7 @@ Page({
     tt.setStorageSync('reviews', reviews);
 
     tt.showToast({ title: '添加成功', icon: 'success' });
-    this.setData({ inputWord: '', inputMeaning: '', inputExample: '', phonetic: '', isIelts: false });
+    this.setData({ inputWord: '', inputMeaning: '', meaningArray: [], inputExample: '', phonetic: '', isIelts: false });
     this.loadRecentWords();
   }
 });
