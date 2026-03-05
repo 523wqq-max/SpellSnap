@@ -1,105 +1,79 @@
 const app = getApp();
 
-// 解析释义和例句，按词性分组
-function parseCollins(collinsData) {
-  try {
-    if (!collinsData || !collinsData.collins_entries) return [];
-    
-    const entries = collinsData.collins_entries[0]?.entries || [];
-    const meanings = [];
-    
-    entries.forEach(entry => {
-      // 获取词性
-      let pos = '';
-      if (entry.headword) {
-        const parts = entry.headword.split(' ');
-        pos = parts[1] || '';
-      }
-      
-      // 获取释义
-      let def = entry.tran || '';
-      
-      // 获取例句
-      let exampleEng = '';
-      let exampleChn = '';
-      if (entry.sentences && entry.sentences.length > 0) {
-        exampleEng = entry.sentences[0].eng || '';
-        exampleChn = entry.sentences[0].chn || '';
-      }
-      
-      if (def) {
-        meanings.push({ pos, def, exampleEng, exampleChn });
-      }
-    });
-    
-    return meanings;
-  } catch (e) {
-    console.error('parseCollins error:', e);
-    return [];
-  }
-}
-
 // 有道词典查询
 function queryYoudao(word) {
   return new Promise((resolve) => {
+    // 使用有道翻译 API 获取基础释义
     tt.request({
-      url: `https://dict.youdao.com/jsonapi?q=${encodeURIComponent(word)}`,
+      url: `https://fanyi.youdao.com/translate?doctype=json&type=AUTO&i=${encodeURIComponent(word)}`,
       method: 'GET',
-      success: (res) => {
-        console.log('Youdao API response:', res);
+      success: (transRes) => {
         const result = { phonetic: '', meaning: '', meaningArray: [], example: '', isIelts: false };
         
         try {
-          if (res.data && res.data.ec) {
-            const wordData = res.data.ec.word;
-            if (wordData && wordData.length > 0) {
-              const entry = wordData[0];
-              // 音标
-              if (entry.ukphone) result.phonetic = `/${entry.ukphone}/`;
-              else if (entry.usphone) result.phonetic = `/${entry.usphone}/`;
+          // 从翻译结果提取释义
+          if (transRes.data && transRes.data.translateResult) {
+            const transResult = transRes.data.translateResult[0];
+            if (transResult && transResult.length > 0) {
+              result.meaning = transResult[0].tgt;
+              result.meaningArray = [{ pos: '', def: transResult[0].tgt, exampleEng: '', exampleChn: '' }];
+            }
+          }
+          
+          // 再请求详细词典数据
+          tt.request({
+            url: `https://dict.youdao.com/suggest?q=${encodeURIComponent(word)}&le=eng&num=1&ver=2.0&doctype=json`,
+            method: 'GET',
+            success: (dictRes) => {
+              console.log('Dict API response:', dictRes);
               
-              // 雅思标签
-              if (entry.wfs) {
-                const ieltsTag = entry.wfs.find(w => w.wf && w.wf.name === '标签' && w.wf.value && w.wf.value.includes('雅思'));
-                result.isIelts = !!ieltsTag;
+              if (dictRes.data && dictRes.data.result && dictRes.data.result.code === 200) {
+                const entries = dictRes.data.data.entries || [];
+                if (entries.length > 0) {
+                  const entry = entries[0];
+                  
+                  // 音标
+                  if (entry.ukphone) result.phonetic = `/${entry.ukphone}/`;
+                  else if (entry.usphone) result.phonetic = `/${entry.usphone}/`;
+                  
+                  // 解析释义和例句
+                  const explain = entry.explain || '';
+                  if (explain) {
+                    // 分割多个释义
+                    const defs = explain.split(/\d+\./).filter(s => s.trim());
+                    result.meaningArray = defs.map(def => {
+                      const trimmed = def.trim();
+                      // 提取词性和释义
+                      const match = trimmed.match(/^([\w\.]+)\s+(.+)$/);
+                      if (match) {
+                        return {
+                          pos: match[1],
+                          def: match[2],
+                          exampleEng: '',
+                          exampleChn: ''
+                        };
+                      }
+                      return { pos: '', def: trimmed, exampleEng: '', exampleChn: '' };
+                    });
+                    result.meaning = result.meaningArray.map(m => 
+                      (m.pos ? m.pos + ' ' : '') + m.def
+                    ).join('; ');
+                  }
+                }
               }
+              
+              console.log('Parsed result:', result);
+              resolve(result);
+            },
+            fail: () => {
+              // 词典请求失败，返回翻译结果
+              resolve(result);
             }
-          }
-          
-          // 从 collins 获取释义和例句
-          if (res.data && res.data.collins) {
-            result.meaningArray = parseCollins(res.data.collins);
-            result.meaning = result.meaningArray.map(m => (m.pos ? m.pos + ' ' : '') + m.def).join('; ');
-            
-            // 第一条例句作为默认展示
-            if (result.meaningArray.length > 0 && result.meaningArray[0].exampleEng) {
-              result.example = `${result.meaningArray[0].exampleEng}\n${result.meaningArray[0].exampleChn}`;
-            }
-          }
-          
-          // 如果 collins 没有，尝试从 ec 获取基本释义
-          if (result.meaningArray.length === 0 && res.data && res.data.ec && res.data.ec.word) {
-            const entry = res.data.ec.word[0];
-            if (entry.trs) {
-              entry.trs.forEach(tr => {
-                let def = '';
-                if (tr.tr && tr.tr[0] && tr.tr[0].l && tr.tr[0].l.i) {
-                  def = tr.tr[0].l.i[0] || '';
-                }
-                let pos = tr.pos || '';
-                if (def) {
-                  result.meaningArray.push({ pos, def, exampleEng: '', exampleChn: '' });
-                }
-              });
-              result.meaning = result.meaningArray.map(m => (m.pos ? m.pos + ' ' : '') + m.def).join('; ');
-            }
-          }
+          });
         } catch (e) {
           console.error('Parse error:', e);
+          resolve(result);
         }
-        
-        console.log('Parsed result:', result);
-        resolve(result);
       },
       fail: (err) => {
         console.error('Request failed:', err);
