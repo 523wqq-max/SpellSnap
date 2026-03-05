@@ -2,40 +2,41 @@ const app = getApp();
 
 // 解析释义和例句，按词性分组
 function parseCollins(collinsData) {
-  if (!collinsData || !collinsData.collins_entries) return [];
-  
-  const entries = collinsData.collins_entries[0]?.entries || [];
-  const meanings = [];
-  
-  entries.forEach(entry => {
-    // 获取词性
-    const pos = entry.headword?.split(' ')[1] || '';
+  try {
+    if (!collinsData || !collinsData.collins_entries) return [];
     
-    // 获取释义
-    let def = '';
-    if (entry.tran) {
-      def = entry.tran;
-    }
+    const entries = collinsData.collins_entries[0]?.entries || [];
+    const meanings = [];
     
-    // 获取例句
-    let exampleEng = '';
-    let exampleChn = '';
-    if (entry.sentences && entry.sentences.length > 0) {
-      exampleEng = entry.sentences[0].eng || '';
-      exampleChn = entry.sentences[0].chn || '';
-    }
+    entries.forEach(entry => {
+      // 获取词性
+      let pos = '';
+      if (entry.headword) {
+        const parts = entry.headword.split(' ');
+        pos = parts[1] || '';
+      }
+      
+      // 获取释义
+      let def = entry.tran || '';
+      
+      // 获取例句
+      let exampleEng = '';
+      let exampleChn = '';
+      if (entry.sentences && entry.sentences.length > 0) {
+        exampleEng = entry.sentences[0].eng || '';
+        exampleChn = entry.sentences[0].chn || '';
+      }
+      
+      if (def) {
+        meanings.push({ pos, def, exampleEng, exampleChn });
+      }
+    });
     
-    if (def) {
-      meanings.push({
-        pos,
-        def,
-        exampleEng,
-        exampleChn
-      });
-    }
-  });
-  
-  return meanings;
+    return meanings;
+  } catch (e) {
+    console.error('parseCollins error:', e);
+    return [];
+  }
 }
 
 // 有道词典查询
@@ -45,56 +46,65 @@ function queryYoudao(word) {
       url: `https://dict.youdao.com/jsonapi?q=${encodeURIComponent(word)}`,
       method: 'GET',
       success: (res) => {
+        console.log('Youdao API response:', res);
         const result = { phonetic: '', meaning: '', meaningArray: [], example: '', isIelts: false };
         
-        if (res.data && res.data.ec) {
-          const wordData = res.data.ec.word;
-          if (wordData && wordData.length > 0) {
-            const entry = wordData[0];
-            // 音标
-            if (entry.ukphone) result.phonetic = `/${entry.ukphone}/`;
-            else if (entry.usphone) result.phonetic = `/${entry.usphone}/`;
-            
-            // 雅思标签
-            if (entry.wfs) {
-              const ieltsTag = entry.wfs.find(w => w.wf && w.wf.name === '标签' && w.wf.value && w.wf.value.includes('雅思'));
-              result.isIelts = !!ieltsTag;
+        try {
+          if (res.data && res.data.ec) {
+            const wordData = res.data.ec.word;
+            if (wordData && wordData.length > 0) {
+              const entry = wordData[0];
+              // 音标
+              if (entry.ukphone) result.phonetic = `/${entry.ukphone}/`;
+              else if (entry.usphone) result.phonetic = `/${entry.usphone}/`;
+              
+              // 雅思标签
+              if (entry.wfs) {
+                const ieltsTag = entry.wfs.find(w => w.wf && w.wf.name === '标签' && w.wf.value && w.wf.value.includes('雅思'));
+                result.isIelts = !!ieltsTag;
+              }
             }
           }
-        }
-        
-        // 从 collins 获取释义和例句
-        if (res.data && res.data.collins) {
-          result.meaningArray = parseCollins(res.data.collins);
-          result.meaning = result.meaningArray.map(m => (m.pos ? m.pos + ' ' : '') + m.def).join('; ');
           
-          // 第一条例句作为默认展示
-          if (result.meaningArray.length > 0 && result.meaningArray[0].exampleEng) {
-            result.example = `${result.meaningArray[0].exampleEng}\n${result.meaningArray[0].exampleChn}`;
-          }
-        }
-        
-        // 如果 collins 没有，尝试从 ec 获取基本释义
-        if (result.meaningArray.length === 0 && res.data && res.data.ec && res.data.ec.word) {
-          const entry = res.data.ec.word[0];
-          if (entry.trs) {
-            entry.trs.forEach(tr => {
-              let def = '';
-              if (tr.tr && tr.tr[0] && tr.tr[0].l && tr.tr[0].l.i) {
-                def = tr.tr[0].l.i[0] || '';
-              }
-              let pos = tr.pos || '';
-              if (def) {
-                result.meaningArray.push({ pos, def, exampleEng: '', exampleChn: '' });
-              }
-            });
+          // 从 collins 获取释义和例句
+          if (res.data && res.data.collins) {
+            result.meaningArray = parseCollins(res.data.collins);
             result.meaning = result.meaningArray.map(m => (m.pos ? m.pos + ' ' : '') + m.def).join('; ');
+            
+            // 第一条例句作为默认展示
+            if (result.meaningArray.length > 0 && result.meaningArray[0].exampleEng) {
+              result.example = `${result.meaningArray[0].exampleEng}\n${result.meaningArray[0].exampleChn}`;
+            }
           }
+          
+          // 如果 collins 没有，尝试从 ec 获取基本释义
+          if (result.meaningArray.length === 0 && res.data && res.data.ec && res.data.ec.word) {
+            const entry = res.data.ec.word[0];
+            if (entry.trs) {
+              entry.trs.forEach(tr => {
+                let def = '';
+                if (tr.tr && tr.tr[0] && tr.tr[0].l && tr.tr[0].l.i) {
+                  def = tr.tr[0].l.i[0] || '';
+                }
+                let pos = tr.pos || '';
+                if (def) {
+                  result.meaningArray.push({ pos, def, exampleEng: '', exampleChn: '' });
+                }
+              });
+              result.meaning = result.meaningArray.map(m => (m.pos ? m.pos + ' ' : '') + m.def).join('; ');
+            }
+          }
+        } catch (e) {
+          console.error('Parse error:', e);
         }
         
+        console.log('Parsed result:', result);
         resolve(result);
       },
-      fail: () => resolve({ phonetic: '', meaning: '', meaningArray: [], example: '', isIelts: false })
+      fail: (err) => {
+        console.error('Request failed:', err);
+        resolve({ phonetic: '', meaning: '', meaningArray: [], example: '', isIelts: false });
+      }
     });
   });
 }
