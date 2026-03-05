@@ -1,6 +1,7 @@
 <view class="container">
   <view class="manual-section">
     <text class="section-title">手动录入</text>
+    
     <input class="word-input" placeholder="输入英文单词" value="{{inputWord}}" bindinput="onWordInput" />
     
     <view class="query-row">
@@ -13,7 +14,14 @@
       <text>音标：{{phonetic}}</text>
     </view>
     
+    <view class="ielts-tag {{isIelts ? 'active' : ''}}" bindtap="toggleIelts">
+      <text>{{isIelts ? '✓ 雅思词汇' : '标记为雅思词汇'}}</text>
+    </view>
+    
     <input class="meaning-input" placeholder="中文释义（可自动填充）" value="{{inputMeaning}}" bindinput="onMeaningInput" />
+    
+    <textarea class="example-input" placeholder="例句（可选，可自动填充）" value="{{inputExample}}" bindinput="onExampleInput" />
+    
     <button class="add-btn" bindtap="addWord">添加到词库</button>
   </view>
 

@@ -45,6 +45,19 @@
   text-align: center;
   margin-bottom: 40rpx;
 }
+.example-eng {
+  font-size: 34rpx;
+  color: #333;
+  display: block;
+  margin-bottom: 16rpx;
+  line-height: 1.6;
+}
+.example-chn {
+  font-size: 30rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 20rpx;
+}
 .meaning {
   font-size: 40rpx;
   color: #333;
@@ -52,11 +65,23 @@
   display: block;
   margin-bottom: 16rpx;
 }
+.word-tags {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+.tag.ielts {
+  background: #e6f7ff;
+  color: #1890ff;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+}
 .phonetic {
   font-size: 32rpx;
   color: #666;
-  display: block;
-  margin-bottom: 20rpx;
 }
 .play-audio {
   color: #07c160;

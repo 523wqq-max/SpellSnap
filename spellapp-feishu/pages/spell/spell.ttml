@@ -12,10 +12,21 @@
 
   <view class="practice-section" wx:if="{{currentWord}}">
     <view class="prompt-card">
-      <text class="meaning">{{currentWord.meaning || '请拼写这个单词'}}</text>
-      <view class="phonetic" wx:if="{{currentWord.phonetic}}">
-        {{currentWord.phonetic}}
+      <!-- 优先展示例句 -->
+      <view wx:if="{{currentWord.example}}">
+        <text class="example-eng">{{currentWord.example.split('\n')[0]}}</text>
+        <text class="example-chn">{{currentWord.example.split('\n')[1]}}</text>
       </view>
+      <!-- 无例句时展示释义 -->
+      <view wx:else>
+        <text class="meaning">{{currentWord.meaning || '请拼写这个单词'}}</text>
+      </view>
+      
+      <view class="word-tags">
+        <view class="tag ielts" wx:if="{{currentWord.isIelts}}">雅思</view>
+        <view class="phonetic" wx:if="{{currentWord.phonetic}}">{{currentWord.phonetic}}</view>
+      </view>
+      
       <view class="play-audio" bindtap="playAudio">
         <text>🔊 点击听发音</text>
       </view>

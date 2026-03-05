@@ -15,12 +15,17 @@
   margin-bottom: 20rpx;
   display: block;
 }
-.word-input, .meaning-input {
+.word-input, .meaning-input, .example-input {
   border: 2rpx solid #e0e0e0;
   border-radius: 12rpx;
   padding: 24rpx;
   font-size: 30rpx;
   margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+.example-input {
+  height: 160rpx;
+  line-height: 1.6;
 }
 .query-row {
   margin-bottom: 20rpx;
@@ -42,6 +47,21 @@
   margin-bottom: 20rpx;
   font-size: 28rpx;
   color: #666;
+}
+.ielts-tag {
+  display: inline-block;
+  background: #f0f0f0;
+  color: #999;
+  padding: 12rpx 24rpx;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+  font-size: 26rpx;
+  border: 2rpx solid #e0e0e0;
+}
+.ielts-tag.active {
+  background: #e6f7ff;
+  color: #1890ff;
+  border-color: #1890ff;
 }
 .add-btn {
   background: #07c160;

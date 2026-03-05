@@ -7,28 +7,47 @@ function queryYoudao(word) {
       url: `https://dict.youdao.com/jsonapi?q=${encodeURIComponent(word)}`,
       method: 'GET',
       success: (res) => {
+        const result = { phonetic: '', meaning: '', example: '', isIelts: false };
+        
         if (res.data && res.data.ec) {
           const wordData = res.data.ec.word;
           if (wordData && wordData.length > 0) {
             const entry = wordData[0];
-            // 提取音标
-            let phonetic = '';
-            if (entry.ukphone) phonetic = `/${entry.ukphone}/`;
-            else if (entry.usphone) phonetic = `/${entry.usphone}/`;
+            // 音标
+            if (entry.ukphone) result.phonetic = `/${entry.ukphone}/`;
+            else if (entry.usphone) result.phonetic = `/${entry.usphone}/`;
             
-            // 提取释义
-            let meaning = '';
+            // 释义
             if (entry.trs) {
-              meaning = entry.trs.map(t => t.tr[0].l.i[0]).join('; ');
+              result.meaning = entry.trs.map(t => t.tr[0].l.i[0]).join('; ');
             }
             
-            resolve({ phonetic, meaning });
-            return;
+            // 例句
+            if (entry.wfs) {
+              const ieltsTag = entry.wfs.find(w => w.wf && w.wf.name === '标签' && w.wf.value && w.wf.value.includes('雅思'));
+              result.isIelts = !!ieltsTag;
+            }
           }
         }
-        resolve(null);
+        
+        // 尝试获取例句（从 Collins 或其他源）
+        if (res.data && res.data.collins) {
+          const collinsData = res.data.collins.collins_entries;
+          if (collinsData && collinsData.length > 0) {
+            const entries = collinsData[0].entries;
+            if (entries && entries.length > 0) {
+              const firstEntry = entries[0];
+              if (firstEntry.sentences && firstEntry.sentences.length > 0) {
+                const sentence = firstEntry.sentences[0];
+                result.example = `${sentence.eng}\n${sentence.chn}`;
+              }
+            }
+          }
+        }
+        
+        resolve(result);
       },
-      fail: () => resolve(null)
+      fail: () => resolve({ phonetic: '', meaning: '', example: '', isIelts: false })
     });
   });
 }
@@ -37,7 +56,9 @@ Page({
   data: {
     inputWord: '',
     inputMeaning: '',
+    inputExample: '',
     phonetic: '',
+    isIelts: false,
     isLoading: false,
     recentWords: []
   },
@@ -64,6 +85,14 @@ Page({
     this.setData({ inputMeaning: e.detail.value });
   },
 
+  onExampleInput(e) {
+    this.setData({ inputExample: e.detail.value });
+  },
+
+  toggleIelts() {
+    this.setData({ isIelts: !this.data.isIelts });
+  },
+
   // 查询单词
   async queryWord() {
     const { inputWord } = this.data;
@@ -80,11 +109,14 @@ Page({
     tt.hideLoading();
     this.setData({ isLoading: false });
 
-    if (result) {
-      this.setData({
-        inputMeaning: result.meaning,
-        phonetic: result.phonetic
-      });
+    this.setData({
+      inputMeaning: result.meaning,
+      inputExample: result.example,
+      phonetic: result.phonetic,
+      isIelts: result.isIelts
+    });
+    
+    if (result.meaning) {
       tt.showToast({ title: '查询成功', icon: 'success' });
     } else {
       tt.showToast({ title: '未找到释义', icon: 'none' });
@@ -92,7 +124,7 @@ Page({
   },
 
   addWord() {
-    const { inputWord, inputMeaning, phonetic } = this.data;
+    const { inputWord, inputMeaning, inputExample, phonetic, isIelts } = this.data;
     if (!inputWord.trim()) {
       tt.showToast({ title: '请输入单词', icon: 'none' });
       return;
@@ -108,7 +140,9 @@ Page({
       id: app.utils.generateId(),
       word: inputWord.trim(),
       meaning: inputMeaning.trim(),
+      example: inputExample.trim(),
       phonetic: phonetic || '',
+      isIelts: isIelts,
       createdAt: Date.now(),
       lastInterval: 0,
       easeFactor: 2.5,
@@ -130,7 +164,7 @@ Page({
     tt.setStorageSync('reviews', reviews);
 
     tt.showToast({ title: '添加成功', icon: 'success' });
-    this.setData({ inputWord: '', inputMeaning: '', phonetic: '' });
+    this.setData({ inputWord: '', inputMeaning: '', inputExample: '', phonetic: '', isIelts: false });
     this.loadRecentWords();
   }
 });
