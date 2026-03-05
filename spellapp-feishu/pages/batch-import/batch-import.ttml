@@ -1,0 +1,71 @@
+<view class="container">
+  <!-- 步骤 1: 拍照 -->
+  <view class="step-section" wx:if="{{step === 1}}">
+    <text class="step-title">Step 1: 拍照</text>
+    
+    <view class="photo-tips">
+      <text class="tips-title">📸 拍摄建议：</text>
+      <text class="tips-item">• 光线充足，避免阴影</text>
+      <text class="tips-item">• 尽量正对页面，减少畸变</text>
+      <text class="tips-item">• 确保文字清晰可见</text>
+    </view>
+    
+    <view class="photo-btn" bindtap="takePhoto">
+      <text class="photo-icon">📷</text>
+      <text class="photo-text">拍照 / 从相册选择</text>
+    </view>
+    
+    <view class="preview-image" wx:if="{{imagePath}}">
+      <image src="{{imagePath}}" mode="aspectFit" class="photo-preview" />
+      <button class="next-btn" bindtap="startOcr" disabled="{{isLoading}}">
+        {{isLoading ? '识别中...' : '开始识别'}}
+      </button>
+    </view>
+  </view>
+
+  <!-- 步骤 2: 解析结果 -->
+  <view class="step-section" wx:if="{{step === 2}}">
+    <text class="step-title">Step 2: 检查并编辑 ({{parsedWords.length}} 个单词)</text>
+    
+    <view class="word-list">
+      <view class="word-item {{item.hasError ? 'error' : ''}}" wx:for="{{parsedWords}}" wx:key="index">
+        <view class="word-header">
+          <input class="word-input" value="{{item.word}}" data-index="{{index}}" data-field="word" bindinput="editWord" placeholder="单词" />
+          <input class="phonetic-input" value="{{item.phonetic}}" data-index="{{index}}" data-field="phonetic" bindinput="editWord" placeholder="音标" />
+        </view>
+        
+        <view class="word-body">
+          <input class="pos-input" value="{{item.pos}}" data-index="{{index}}" data-field="pos" bindinput="editWord" placeholder="词性" />
+          <input class="meaning-input" value="{{item.meaning}}" data-index="{{index}}" data-field="meaning" bindinput="editWord" placeholder="释义" />
+        </view>
+        
+        <textarea class="example-input" value="{{item.example}}" data-index="{{index}}" data-field="example" bindinput="editWord" placeholder="例句（可选）" />
+        
+        <view class="word-actions">
+          <view class="ielts-checkbox" bindtap="toggleIelts" data-index="{{index}}">
+            <text>{{item.isIelts ? '☑' : '☐'}} 雅思词汇</text>
+          </view>
+          <text class="delete-btn" bindtap="deleteWord" data-index="{{index}}">删除</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="actions">
+      <button class="add-btn" bindtap="addEmptyWord">+ 添加单词</button>
+      <button class="import-btn" bindtap="importWords">确认导入 ({{validWordsCount}})</button>
+    </view>
+  </view>
+
+  <!-- 步骤 3: 完成 -->
+  <view class="step-section" wx:if="{{step === 3}}">
+    <text class="step-title">导入完成！</text>
+    
+    <view class="result-card">
+      <text class="result-number">{{importedCount}}</text>
+      <text class="result-text">个单词已添加到词库</text>
+    </view>
+    
+    <button class="next-btn" bindtap="goHome">去练习</button>
+    <button class="secondary-btn" bindtap="reset">继续导入</button>
+  </view>
+</view>

@@ -1,4 +1,14 @@
 <view class="container">
+  <!-- 批量导入入口 -->
+  <view class="batch-import-banner" bindtap="goToBatchImport">
+    <text class="banner-icon">📷</text>
+    <view class="banner-content">
+      <text class="banner-title">批量导入单词</text>
+      <text class="banner-desc">拍照识别词汇书，一键批量添加</text>
+    </view>
+    <text class="banner-arrow">></text>
+  </view>
+
   <view class="manual-section">
     <text class="section-title">手动录入</text>
     

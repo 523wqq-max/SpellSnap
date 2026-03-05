@@ -125,6 +125,13 @@ Page({
     this.setData({ isIelts: !this.data.isIelts });
   },
 
+  // 跳转到批量导入
+  goToBatchImport() {
+    tt.navigateTo({
+      url: '/pages/batch-import/batch-import'
+    });
+  },
+
   // 查询单词
   async queryWord() {
     const { inputWord } = this.data;

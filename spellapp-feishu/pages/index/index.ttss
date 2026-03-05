@@ -1,3 +1,35 @@
+/* 批量导入入口 */
+.batch-import-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  align-items: center;
+}
+.banner-icon {
+  font-size: 60rpx;
+  margin-right: 20rpx;
+}
+.banner-content {
+  flex: 1;
+}
+.banner-title {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: bold;
+  display: block;
+}
+.banner-desc {
+  color: rgba(255,255,255,0.8);
+  font-size: 26rpx;
+  margin-top: 8rpx;
+  display: block;
+}
+.banner-arrow {
+  color: #fff;
+  font-size: 36rpx;
+}
 .container {
   padding: 30rpx;
   background: #f5f5f5;

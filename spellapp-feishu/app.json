@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/word-list/word-list",
     "pages/spell/spell",
-    "pages/stats/stats"
+    "pages/stats/stats",
+    "pages/batch-import/batch-import"
   ],
   "window": {
     "backgroundTextStyle": "light",

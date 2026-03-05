@@ -1,0 +1,190 @@
+.container {
+  padding: 30rpx;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+.step-section {
+  margin-bottom: 40rpx;
+}
+.step-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 30rpx;
+}
+/* Step 1 */
+.photo-tips {
+  background: #e6f7ff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 30rpx;
+}
+.tips-title {
+  font-size: 28rpx;
+  color: #1890ff;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 12rpx;
+}
+.tips-item {
+  font-size: 26rpx;
+  color: #666;
+  display: block;
+  line-height: 1.6;
+}
+.photo-btn {
+  background: #07c160;
+  border-radius: 16rpx;
+  padding: 60rpx;
+  text-align: center;
+}
+.photo-icon {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: 20rpx;
+}
+.photo-text {
+  font-size: 32rpx;
+  color: #fff;
+}
+.preview-image {
+  margin-top: 30rpx;
+}
+.photo-preview {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 12rpx;
+  background: #f0f0f0;
+  margin-bottom: 20rpx;
+}
+.next-btn {
+  background: #1890ff;
+  color: #fff;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+}
+/* Step 2 */
+.word-list {
+  margin-bottom: 30rpx;
+}
+.word-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  border: 2rpx solid transparent;
+}
+.word-item.error {
+  border-color: #ff4d4f;
+}
+.word-header {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+.word-input {
+  flex: 1;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+.phonetic-input {
+  width: 200rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+.word-body {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+.pos-input {
+  width: 100rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 26rpx;
+}
+.meaning-input {
+  flex: 1;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 28rpx;
+}
+.example-input {
+  width: 100%;
+  height: 120rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 26rpx;
+  line-height: 1.4;
+  margin-bottom: 16rpx;
+  box-sizing: border-box;
+}
+.word-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ielts-checkbox {
+  color: #1890ff;
+  font-size: 26rpx;
+}
+.delete-btn {
+  color: #ff4d4f;
+  font-size: 26rpx;
+}
+.actions {
+  display: flex;
+  gap: 20rpx;
+}
+.add-btn {
+  flex: 1;
+  background: #fff;
+  color: #666;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+}
+.import-btn {
+  flex: 2;
+  background: #07c160;
+  color: #fff;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+}
+/* Step 3 */
+.result-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 80rpx;
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+.result-number {
+  font-size: 120rpx;
+  font-weight: bold;
+  color: #07c160;
+  display: block;
+}
+.result-text {
+  font-size: 30rpx;
+  color: #666;
+  margin-top: 20rpx;
+  display: block;
+}
+.secondary-btn {
+  background: #f0f0f0;
+  color: #666;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  margin-top: 20rpx;
+}
