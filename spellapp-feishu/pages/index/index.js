@@ -1,9 +1,44 @@
 const app = getApp();
 
+// 有道词典查询
+function queryYoudao(word) {
+  return new Promise((resolve) => {
+    tt.request({
+      url: `https://dict.youdao.com/jsonapi?q=${encodeURIComponent(word)}`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data && res.data.ec) {
+          const wordData = res.data.ec.word;
+          if (wordData && wordData.length > 0) {
+            const entry = wordData[0];
+            // 提取音标
+            let phonetic = '';
+            if (entry.ukphone) phonetic = `/${entry.ukphone}/`;
+            else if (entry.usphone) phonetic = `/${entry.usphone}/`;
+            
+            // 提取释义
+            let meaning = '';
+            if (entry.trs) {
+              meaning = entry.trs.map(t => t.tr[0].l.i[0]).join('; ');
+            }
+            
+            resolve({ phonetic, meaning });
+            return;
+          }
+        }
+        resolve(null);
+      },
+      fail: () => resolve(null)
+    });
+  });
+}
+
 Page({
   data: {
     inputWord: '',
     inputMeaning: '',
+    phonetic: '',
+    isLoading: false,
     recentWords: []
   },
 
@@ -29,83 +64,73 @@ Page({
     this.setData({ inputMeaning: e.detail.value });
   },
 
-  takePhoto() {
-    tt.chooseImage({
-      count: 1,
-      sourceType: ['camera', 'album'],
-      success: (res) => {
-        const tempFilePath = res.tempFilePaths[0];
-        this.recognizeText(tempFilePath);
-      }
-    });
-  },
-
-  recognizeText(imagePath) {
-    // TODO: 接入 OCR API（百度/腾讯/阿里）
-    // 临时模拟：让用户确认
-    tt.showModal({
-      title: '识别结果',
-      content: '检测到单词：necessary\n释义：必要的\n\n（实际需接入 OCR API）',
-      success: (res) => {
-        if (res.confirm) {
-          this.addWordWithData('necessary', '必要的', imagePath);
-        }
-      }
-    });
-  },
-
-  addWord() {
-    const { inputWord, inputMeaning } = this.data;
+  // 查询单词
+  async queryWord() {
+    const { inputWord } = this.data;
     if (!inputWord.trim()) {
       tt.showToast({ title: '请输入单词', icon: 'none' });
       return;
     }
-    this.addWordWithData(inputWord.trim(), inputMeaning.trim());
+
+    this.setData({ isLoading: true });
+    tt.showLoading({ title: '查询中...' });
+
+    const result = await queryYoudao(inputWord.trim());
+    
+    tt.hideLoading();
+    this.setData({ isLoading: false });
+
+    if (result) {
+      this.setData({
+        inputMeaning: result.meaning,
+        phonetic: result.phonetic
+      });
+      tt.showToast({ title: '查询成功', icon: 'success' });
+    } else {
+      tt.showToast({ title: '未找到释义', icon: 'none' });
+    }
   },
 
-  addWordWithData(word, meaning, imagePath = '') {
+  addWord() {
+    const { inputWord, inputMeaning, phonetic } = this.data;
+    if (!inputWord.trim()) {
+      tt.showToast({ title: '请输入单词', icon: 'none' });
+      return;
+    }
+
     const words = tt.getStorageSync('words') || [];
-    
-    // 检查是否已存在
-    if (words.some(w => w.word.toLowerCase() === word.toLowerCase())) {
+    if (words.some(w => w.word.toLowerCase() === inputWord.trim().toLowerCase())) {
       tt.showToast({ title: '单词已存在', icon: 'none' });
       return;
     }
 
     const newWord = {
       id: app.utils.generateId(),
-      word: word,
-      meaning: meaning || '',
-      phonetic: '', // TODO: 查词典 API 填充
-      imagePath: imagePath,
+      word: inputWord.trim(),
+      meaning: inputMeaning.trim(),
+      phonetic: phonetic || '',
       createdAt: Date.now(),
-      // 记忆曲线初始值
       lastInterval: 0,
       easeFactor: 2.5,
       consecutiveCorrect: 0,
-      nextReview: Date.now() // 新单词立即可以复习
+      nextReview: Date.now()
     };
 
     words.push(newWord);
     tt.setStorageSync('words', words);
 
-    // 创建首次复习记录
-    this.createReviewRecord(newWord.id);
-
-    tt.showToast({ title: '添加成功', icon: 'success' });
-    this.setData({ inputWord: '', inputMeaning: '' });
-    this.loadRecentWords();
-  },
-
-  createReviewRecord(wordId) {
     const reviews = tt.getStorageSync('reviews') || [];
     reviews.push({
       id: app.utils.generateId(),
-      wordId: wordId,
+      wordId: newWord.id,
       scheduledAt: Date.now(),
       completedAt: null,
       result: null
     });
     tt.setStorageSync('reviews', reviews);
+
+    tt.showToast({ title: '添加成功', icon: 'success' });
+    this.setData({ inputWord: '', inputMeaning: '', phonetic: '' });
+    this.loadRecentWords();
   }
 });

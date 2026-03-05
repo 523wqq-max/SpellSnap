@@ -3,7 +3,6 @@
   background: #f5f5f5;
   min-height: 100vh;
 }
-
 .summary-card {
   background: #fff;
   border-radius: 20rpx;
@@ -11,52 +10,31 @@
   margin-bottom: 30rpx;
   text-align: center;
 }
-
-.summary-title {
-  font-size: 28rpx;
-  color: #666;
-  margin-bottom: 20rpx;
-  display: block;
-}
-
 .summary-stats {
   display: flex;
   justify-content: space-around;
 }
-
-.stat-item {
-  text-align: center;
-}
-
 .stat-value {
   font-size: 48rpx;
   font-weight: bold;
   color: #333;
-  display: block;
 }
-
 .stat-label {
   font-size: 24rpx;
   color: #999;
-  margin-top: 10rpx;
-  display: block;
 }
-
 .section {
   background: #fff;
   border-radius: 20rpx;
   padding: 40rpx;
   margin-bottom: 30rpx;
 }
-
 .section-title {
   font-size: 32rpx;
   font-weight: bold;
-  color: #333;
   margin-bottom: 30rpx;
   display: block;
 }
-
 .error-item {
   display: flex;
   justify-content: space-between;
@@ -64,51 +42,27 @@
   padding: 24rpx 0;
   border-bottom: 2rpx solid #f0f0f0;
 }
-
-.error-item:last-child {
-  border-bottom: none;
-}
-
-.error-info {
-  flex: 1;
-}
-
 .error-name {
   font-size: 30rpx;
   color: #333;
-  display: block;
-  margin-bottom: 8rpx;
 }
-
 .error-count {
   font-size: 24rpx;
   color: #999;
 }
-
 .error-bar {
   width: 200rpx;
   height: 12rpx;
   background: #f0f0f0;
   border-radius: 6rpx;
-  overflow: hidden;
 }
-
 .error-fill {
   height: 100%;
   background: #ff4d4f;
   border-radius: 6rpx;
 }
-
 .export-btn {
   background: #1890ff;
   color: #fff;
   border-radius: 12rpx;
-  margin-top: 20rpx;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60rpx;
-  color: #999;
-  font-size: 28rpx;
 }

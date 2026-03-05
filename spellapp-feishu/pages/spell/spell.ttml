@@ -1,76 +1,40 @@
 <view class="container">
-  <!-- 准备状态 -->
   <view class="ready-section" wx:if="{{!currentWord}}">
     <view class="stats-card">
       <text class="stats-number">{{dueCount}}</text>
       <text class="stats-label">今日待复习</text>
     </view>
-    
-    <button class="start-btn" bindtap="startPractice" wx:if="{{dueCount > 0}}">
-      开始复习
-    </button>
+    <button class="start-btn" bindtap="startPractice" wx:if="{{dueCount > 0}}">开始复习</button>
     <view class="empty-state" wx:else>
       <text>今日没有待复习单词 🎉</text>
-      <button class="start-btn" bindtap="startNewWords">学习新单词</button>
     </view>
   </view>
 
-  <!-- 练习状态 -->
   <view class="practice-section" wx:if="{{currentWord}}">
-    <view class="progress-bar">
-      <view class="progress-fill" style="width: {{progressPercent}}%"></view>
-    </view>
-    
     <view class="prompt-card">
       <text class="meaning">{{currentWord.meaning || '请拼写这个单词'}}</text>
       <view class="phonetic" wx:if="{{currentWord.phonetic}}">
         {{currentWord.phonetic}}
       </view>
       <view class="play-audio" bindtap="playAudio">
-        <text>🔊 播放发音</text>
+        <text>🔊 点击听发音</text>
       </view>
     </view>
     
-    <input 
-      class="spell-input {{inputStatus}}"
-      placeholder="在此输入单词"
-      value="{{userInput}}"
-      bindinput="onInput"
-      bindconfirm="checkSpelling"
-      focus="{{inputFocus}}"
-    />
+    <input class="spell-input {{inputStatus}}" placeholder="在此输入单词" value="{{userInput}}" bindinput="onInput" bindconfirm="checkSpelling" />
     
     <view class="feedback" wx:if="{{showFeedback}}">
-      <view class="feedback-correct" wx:if="{{isCorrect}}">
-        ✅ 正确！
-      </view>
+      <view class="feedback-correct" wx:if="{{isCorrect}}">✅ 正确！</view>
       <view class="feedback-wrong" wx:else>
         <text>❌ 正确拼写：{{currentWord.word}}</text>
         <view class="error-analysis" wx:if="{{errorAnalysis}}">
-          <text class="error-type">错误类型：{{errorAnalysis.type}}</text>
+          <text class="error-type">{{errorAnalysis.type}}</text>
           <text class="error-tip">{{errorAnalysis.tip}}</text>
         </view>
       </view>
     </view>
     
-    <view class="actions">
-      <button 
-        class="submit-btn" 
-        bindtap="checkSpelling"
-        wx:if="{{!showFeedback}}"
-      >提交</button>
-      
-      <view class="rating-btns" wx:if="{{showFeedback && isCorrect}}">
-        <button class="rate-btn hard" bindtap="rateWord" data-quality="1">😰 困难</button>
-        <button class="rate-btn good" bindtap="rateWord" data-quality="2">😊 记得</button>
-        <button class="rate-btn easy" bindtap="rateWord" data-quality="3">🤩 简单</button>
-      </view>
-      
-      <button 
-        class="next-btn" 
-        bindtap="nextWord"
-        wx:if="{{showFeedback && !isCorrect}}"
-      >继续</button>
-    </view>
+    <button class="submit-btn" bindtap="checkSpelling" wx:if="{{!showFeedback}}">提交</button>
+    <button class="next-btn" bindtap="nextWord" wx:if="{{showFeedback}}">{{isCorrect ? '下一个' : '继续'}}</button>
   </view>
 </view>

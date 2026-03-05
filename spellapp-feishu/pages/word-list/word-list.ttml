@@ -1,12 +1,7 @@
 <view class="container">
   <view class="search-bar">
     <text class="search-icon">🔍</text>
-    <input 
-      class="search-input" 
-      placeholder="搜索单词" 
-      value="{{searchQuery}}"
-      bindinput="onSearch"
-    />
+    <input class="search-input" placeholder="搜索单词" value="{{searchQuery}}" bindinput="onSearch" />
   </view>
 
   <view class="word-list" wx:if="{{filteredWords.length > 0}}">
@@ -15,11 +10,8 @@
         <text class="word-text">{{item.word}}</text>
         <text class="word-meaning">{{item.meaning || '暂无释义'}}</text>
       </view>
-      
       <view class="word-meta">
-        <view class="review-badge {{item.reviewStatus}}">
-          {{item.reviewText}}
-        </view>
+        <view class="review-badge {{item.reviewStatus}}">{{item.reviewText}}</view>
         <text class="delete-btn" bindtap="deleteWord" data-id="{{item.id}}">删除</text>
       </view>
     </view>

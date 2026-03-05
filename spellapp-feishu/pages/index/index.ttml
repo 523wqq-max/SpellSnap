@@ -1,31 +1,24 @@
 <view class="container">
-  <view class="camera-section" bindtap="takePhoto">
-    <image class="camera-icon" src="/static/camera-large.png" mode="aspectFit"/>
-    <text class="camera-text">点击拍照识别单词</text>
-    <text class="camera-subtext">支持书本、屏幕、手写文字</text>
-  </view>
-
   <view class="manual-section">
-    <text class="section-title">或手动录入</text>
-    <input 
-      class="word-input" 
-      placeholder="输入英文单词" 
-      value="{{inputWord}}"
-      bindinput="onWordInput"
-    />
-    <input 
-      class="meaning-input" 
-      placeholder="中文释义（可选）" 
-      value="{{inputMeaning}}"
-      bindinput="onMeaningInput"
-    />
+    <text class="section-title">手动录入</text>
+    <input class="word-input" placeholder="输入英文单词" value="{{inputWord}}" bindinput="onWordInput" />
+    
+    <view class="query-row">
+      <button class="query-btn {{isLoading ? 'loading' : ''}}" bindtap="queryWord" disabled="{{isLoading}}">
+        {{isLoading ? '查询中...' : '🔍 查释义'}}
+      </button>
+    </view>
+    
+    <view class="phonetic-display" wx:if="{{phonetic}}">
+      <text>音标：{{phonetic}}</text>
+    </view>
+    
+    <input class="meaning-input" placeholder="中文释义（可自动填充）" value="{{inputMeaning}}" bindinput="onMeaningInput" />
     <button class="add-btn" bindtap="addWord">添加到词库</button>
   </view>
 
   <view class="recent-section" wx:if="{{recentWords.length > 0}}">
     <text class="section-title">最近录入</text>
-    <view class="word-tag" wx:for="{{recentWords}}" wx:key="id">
-      {{item.word}}
-    </view>
+    <view class="word-tag" wx:for="{{recentWords}}" wx:key="id">{{item.word}}</view>
   </view>
 </view>
